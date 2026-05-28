@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConnectionHub - Everything students need.</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Decorative Glowing Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Global Workspace Wrapper -->
+  <div class="app-layout logged-out" id="app-layout-node">
+    
+    <!-- ==========================================================
+         1. FULL SCREEN PREMIUM LOGIN PORTAL
+         ========================================================== -->
+    <div id="login-portal" class="login-portal-wrapper">
+      <div class="login-card-container card">
+        <div class="login-card-header">
+          <div class="logo-icon large">CH</div>
+          <h2>Welcome to ConnectionHub</h2>
+          <p class="logo-subtext">“Everything students need. Organized in one place.”</p>
+        </div>
+
+        <div class="login-tabs">
+          <button class="login-tab-btn active" id="login-tab-student" onclick="switchLoginTab('student')">
+            <i data-lucide="graduation-cap"></i> Student Portal
+          </button>
+          <button class="login-tab-btn" id="login-tab-staff" onclick="switchLoginTab('staff')">
+            <i data-lucide="briefcase"></i> Instructor Portal
+          </button>
+        </div>
+
+        <div class="login-profile-section">
+          <p class="login-section-info" id="login-section-title">Select a student account to log in:</p>
+          <div class="profile-grid" id="login-profiles-list">
+            <!-- Dynamic profile chips inserted by JS -->
+          </div>
+        </div>
+
+        <div class="add-profile-divider">
+          <span>Or configure a custom profile</span>
+        </div>
+
+        <button class="btn btn-outline" style="width: 100%; border-radius: var(--radius-md);" id="btn-toggle-add-profile" onclick="toggleAddProfileForm()">
+          <i data-lucide="user-plus"></i> Add Custom Profile
+        </button>
+
+        <form id="add-profile-form" class="add-profile-form hidden" onsubmit="handleCreateProfile(event)">
+          <div class="form-group">
+            <label for="new-profile-name">Full Name *</label>
+            <input type="text" id="new-profile-name" placeholder="e.g. Dr. Arthur Pendelton" required>
+          </div>
+          <div class="form-group">
+            <label for="new-profile-email">Official Email *</label>
+            <input type="email" id="new-profile-email" placeholder="e.g. arthur@college.edu" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="new-profile-dept">Department *</label>
+              <select id="new-profile-dept" required>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Electronics & Communication">ECE</option>
+                <option value="Information Technology">Information Tech</option>
+                <option value="Mechanical Engineering">Mechanical</option>
+                <option value="Biotechnology">Biotechnology</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new-profile-title">Role Title / Year *</label>
+              <input type="text" id="new-profile-title" placeholder="e.g. HOD or Student (3rd Year)" required>
+            </div>
+          </div>
+          <div class="form-actions" style="margin-top: 10px; padding-top: 10px; border:none;">
+            <button type="button" class="btn btn-secondary" style="padding: 8px 14px;" onclick="toggleAddProfileForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">Create Profile</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         2. CORE WORKSPACE (Sidebar & Header & Main Area)
+         ========================================================== -->
+    <div class="app-workspace">
+      
+      <!-- Collapsible Sidebar Navigation -->
+      <aside class="app-sidebar" id="app-sidebar-node">
+        <div class="sidebar-header">
+          <div class="logo-icon">CH</div>
+          <span class="logo-text">ConnectionHub</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <button class="sidebar-nav-item active" id="nav-home" onclick="switchTab('home')">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard</span>
+          </button>
+          <button class="sidebar-nav-item" id="nav-categories" onclick="switchTab('categories')">
+            <i data-lucide="compass"></i>
+            <span>Explore Opportunities</span>
+          </button>
+          <button class="sidebar-nav-item" id="nav-bookmarks" onclick="switchTab('bookmarks')">
+            <i data-lucide="bookmark"></i>
+            <span>Saved Notices</span>
+          </button>
+          <button class="sidebar-nav-item" id="nav-notifications" onclick="switchTab('notifications')">
+            <i data-lucide="bell"></i>
+            <span>Activity Center</span>
+            <span class="sidebar-badge" id="sidebar-noti-badge">3</span>
+          </button>
+          <button class="sidebar-nav-item" id="nav-instructor" onclick="switchTab('instructor')">
+            <i data-lucide="plus-circle"></i>
+            <span>Instructor Portal</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user-card" id="sidebar-user-badge">
+            <div class="sidebar-avatar" id="sidebar-avatar-initials">U</div>
+            <div class="sidebar-user-info">
+              <span class="sidebar-username" id="sidebar-username-label">User name</span>
+              <span class="sidebar-userrole" id="sidebar-userrole-label">CS HOD</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Panel Wrapper -->
+      <div class="app-main-panel">
+        
+        <!-- Header -->
+        <header class="app-top-header">
+          <div class="header-left">
+            <button class="hamburger-menu-btn" onclick="toggleSidebarMenu()" aria-label="Toggle Navigation">
+              <i data-lucide="menu"></i>
+            </button>
+            <div class="breadcrumb-trail">
+              <span id="breadcrumb-parent">ConnectionHub</span>
+              <span class="divider">/</span>
+              <span id="breadcrumb-active" class="active">Dashboard</span>
+            </div>
+          </div>
+          
+          <div class="header-right">
+            <div class="theme-toggle-container">
+              <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode" id="theme-toggle">
+                <i data-lucide="moon"></i>
+              </button>
+            </div>
+            
+            <button class="icon-btn header-noti-btn" onclick="switchTab('notifications')" aria-label="Notifications" title="Inbox Alerts">
+              <i data-lucide="bell"></i>
+              <span class="notification-badge" id="noti-badge-count">3</span>
+            </button>
+
+            <div class="vertical-divider"></div>
+
+            <div class="header-user-profile" onclick="toggleUserDropdown(event)">
+              <div class="header-avatar" id="header-avatar-node">U</div>
+              <div class="header-user-info">
+                <span class="header-user-name" id="header-user-name-node">User Name</span>
+                <span class="header-user-role" id="header-user-role-node">CS Student</span>
+              </div>
+              <i data-lucide="chevron-down" class="dropdown-chevron"></i>
+              
+              <!-- Dropdown Menu -->
+              <div class="profile-dropdown" id="profile-dropdown-menu">
+                <div class="dropdown-header">
+                  <p class="dropdown-email" id="dropdown-user-email">email@college.edu</p>
+                </div>
+                <button class="dropdown-item" onclick="switchTab('bookmarks')">
+                  <i data-lucide="bookmark"></i> Saved Items
+                </button>
+                <button class="dropdown-item text-danger" onclick="logoutUser()">
+                  <i data-lucide="log-out"></i> Log Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Scrollable Dashboard Body -->
+        <main class="panel-content-body" id="app-main-content">
+          
+          <!-- ================= HOME TAB ================= -->
+          <section id="tab-home" class="app-page active">
+            
+            <!-- Welcome Hero Widget -->
+            <div class="welcome-hero-banner">
+              <div class="welcome-hero-text">
+                <h2 id="home-welcome-title">Welcome back, Arjun!</h2>
+                <p id="welcome-user-subtitle">Access opportunities matching your department profile</p>
+              </div>
+              <div class="welcome-hero-action">
+                <button class="btn btn-primary" onclick="switchTab('categories')">
+                  Explore Opportunities <i data-lucide="arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Two Column Dashboard Grid -->
+            <div class="dashboard-columns-grid">
+              
+              <!-- Left Dashboard Pane (Main content) -->
+              <div class="dashboard-pane-left">
+                <!-- Trending Slider -->
+                <div class="section-container">
+                  <div class="section-header">
+                    <h3 class="section-title">🔥 Trending Opportunities</h3>
+                    <a href="#" class="view-all-link" onclick="switchTab('categories')">View all</a>
+                  </div>
+                  <div class="trending-slider-desktop" id="trending-slider-container">
+                    <!-- Cards inserted by JS -->
+                  </div>
+                </div>
+
+                <!-- New Updates -->
+                <div class="section-container" style="margin-top: 1.5rem;">
+                  <h3 class="section-title">✨ New Updates</h3>
+                  <div class="vertical-cards-grid-desktop" id="new-updates-container">
+                    <!-- Cards inserted by JS -->
+                  </div>
+                </div>
+
+                <!-- Recommended Events -->
+                <div class="section-container" style="margin-top: 1.5rem;">
+                  <h3 class="section-title">🎯 Recommended for You</h3>
+                  <div class="vertical-cards-grid-desktop" id="recommended-container">
+                    <!-- Cards inserted by JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Dashboard Pane (Sidebar elements) -->
+              <div class="dashboard-pane-right">
+                <!-- Category Shortcuts -->
+                <div class="side-panel-card card">
+                  <h3 class="side-card-title">Category Shortcuts</h3>
+                  <div class="category-shortcuts-list">
+                    <div class="shortcut-row-item" onclick="viewCategory('Internships')">
+                      <div class="shortcut-icon icon-internships"><i data-lucide="award"></i></div>
+                      <span>Internships</span>
+                      <i data-lucide="chevron-right" class="arrow-icon"></i>
+                    </div>
+                    <div class="shortcut-row-item" onclick="viewCategory('Hackathons')">
+                      <div class="shortcut-icon icon-hackathons"><i data-lucide="code-2"></i></div>
+                      <span>Hackathons</span>
+                      <i data-lucide="chevron-right" class="arrow-icon"></i>
+                    </div>
+                    <div class="shortcut-row-item" onclick="viewCategory('Workshops')">
+                      <div class="shortcut-icon icon-workshops"><i data-lucide="cpu"></i></div>
+                      <span>Workshops</span>
+                      <i data-lucide="chevron-right" class="arrow-icon"></i>
+                    </div>
+                    <div class="shortcut-row-item" onclick="viewCategory('Placement Training')">
+                      <div class="shortcut-icon icon-placements"><i data-lucide="briefcase"></i></div>
+                      <span>Placement Training</span>
+                      <i data-lucide="chevron-right" class="arrow-icon"></i>
+                    </div>
+                    <div class="shortcut-row-item" onclick="viewCategory('Competitions')">
+                      <div class="shortcut-icon icon-competitions"><i data-lucide="trophy"></i></div>
+                      <span>Competitions</span>
+                      <i data-lucide="chevron-right" class="arrow-icon"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ending Soon Countdown Cards -->
+                <div class="side-panel-card card" style="margin-top: 1.5rem;">
+                  <h3 class="side-card-title">⏳ Ending Soon</h3>
+                  <div class="deadline-timeline-list" id="ending-soon-container">
+                    <!-- Timer cards inserted by JS -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- ================= CATEGORIES/EXPLORE TAB ================= -->
+          <section id="tab-categories" class="app-page">
+            <div class="explore-header-row">
+              <div>
+                <h2>Explore Opportunities</h2>
+                <p>Search, filter, and apply for student events and resources</p>
+              </div>
+            </div>
+
+            <!-- Modern Wide Filter Panel -->
+            <div class="wide-filter-panel card">
+              <div class="filter-search-container">
+                <i data-lucide="search" class="search-input-icon"></i>
+                <input type="text" id="search-input" placeholder="Search internships, hackathons, seminars..." oninput="handleFiltersChange()">
+              </div>
+              <div class="filter-dropdowns-container">
+                <div class="dropdown-box">
+                  <label for="filter-dept">Department</label>
+                  <select id="filter-dept" onchange="handleFiltersChange()">
+                    <option value="all">All Departments</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Electronics & Communication">ECE</option>
+                    <option value="Information Technology">Information Tech</option>
+                    <option value="Mechanical Engineering">Mechanical</option>
+                    <option value="Biotechnology">Biotechnology</option>
+                  </select>
+                </div>
+                <div class="dropdown-box">
+                  <label for="filter-date">Date Posted</label>
+                  <select id="filter-date" onchange="handleFiltersChange()">
+                    <option value="all">Anytime</option>
+                    <option value="today">Posted Today</option>
+                    <option value="week">Past Week</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category Filter Pills Bar -->
+            <div class="pills-slider-container" id="category-pills-bar">
+              <!-- Dynamically populated with pills -->
+            </div>
+
+            <!-- Explore Listing Area -->
+            <div class="explore-notices-workspace">
+              <div class="filter-status-summary" id="filter-summary-text">Showing all opportunities</div>
+              <div class="explore-cards-grid" id="explore-notices-container">
+                <!-- Cards inserted by JS -->
+              </div>
+            </div>
+          </section>
+
+          <!-- ================= BOOKMARKS TAB ================= -->
+          <section id="tab-bookmarks" class="app-page">
+            <div class="explore-header-row">
+              <div>
+                <h2>Saved Notices</h2>
+                <p>Access your bookmarked opportunities and applications</p>
+              </div>
+            </div>
+
+            <div class="explore-cards-grid" id="bookmarks-container">
+              <!-- Bookmarks inserted by JS -->
+            </div>
+          </section>
+
+          <!-- ================= NOTIFICATIONS TAB ================= -->
+          <section id="tab-notifications" class="app-page">
+            <div class="explore-header-row">
+              <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                <div>
+                  <h2>Activity Center</h2>
+                  <p>Real-time campus updates & reminders</p>
+                </div>
+                <button class="btn btn-outline" onclick="clearAllNotifications()">
+                  <i data-lucide="trash-2"></i> Clear All Alerts
+                </button>
+              </div>
+            </div>
+
+            <div class="activity-feed-wrapper" id="notifications-inbox-container">
+              <!-- Notification list inserted by JS -->
+            </div>
+          </section>
+
+          <!-- ================= INSTRUCTOR TAB ================= -->
+          <section id="tab-instructor" class="app-page">
+            
+            <!-- Restrict screen for students -->
+            <div id="instructor-access-restricted" class="restricted-screen card">
+              <div class="restricted-icon">
+                <i data-lucide="shield-alert"></i>
+              </div>
+              <h2>Access Restricted</h2>
+              <p class="restricted-msg">Access Restricted: Only authorized staff members can create or manage announcements.</p>
+              <div class="restricted-hint">
+                <p>💡 <strong>Note for Testing:</strong> Use the <strong>Profiles Switcher</strong> (Logout and select a Staff account) to access the publishing dashboard.</p>
+              </div>
+            </div>
+
+            <!-- Verified Instructor Dashboard -->
+            <div id="instructor-dashboard-content" class="instructor-dashboard-workspace">
+              
+              <!-- Welcome and Stats Header -->
+              <div class="instructor-dashboard-header card">
+                <div class="header-welcome-text">
+                  <span class="badge badge-verified"><i data-lucide="check-circle-2"></i> Verified Staff Coordinator</span>
+                  <h2 id="instructor-welcome-title">Dr. Sarah Jenkins</h2>
+                  <p id="instructor-welcome-dept">Computer Science • Head of Department</p>
+                </div>
+                <button class="btn btn-primary" onclick="openNewNoticeModal()">
+                  <i data-lucide="plus"></i> Create Announcement
+                </button>
+              </div>
+
+              <!-- Stats Cards -->
+              <div class="dashboard-stats-row">
+                <div class="dashboard-stat-card card">
+                  <span class="stat-label">Active Notices</span>
+                  <span class="stat-value" id="stat-active-count">0</span>
+                </div>
+                <div class="dashboard-stat-card card">
+                  <span class="stat-label">Student Bookmarks</span>
+                  <span class="stat-value" id="stat-bookmarks-count">0</span>
+                </div>
+                <div class="dashboard-stat-card card">
+                  <span class="stat-label">Total Registration Clicks</span>
+                  <span class="stat-value" id="stat-clicks-count">0</span>
+                </div>
+              </div>
+
+              <!-- Management Panel -->
+              <div class="section-container" style="margin-top: 1.5rem;">
+                <h3 class="section-title">Your Published Announcements</h3>
+                <div class="instructor-notices-grid" id="instructor-notices-container">
+                  <!-- Editable notice cards inserted by JS -->
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack" id="toast-stack-container"></div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="notice-detail-modal" onclick="closeNoticeDetailModal(event)">
+    <div class="modal-content card desktop-modal-content" onclick="event.stopPropagation()">
+      <button class="close-modal-btn" onclick="closeNoticeDetailModal(null)">&times;</button>
+      <div class="modal-scrollable-content" id="detail-modal-body">
+        <!-- Notice details dynamically rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Create/Edit Notice Form Modal -->
+  <div class="modal-overlay" id="notice-form-modal" onclick="closeNoticeFormModal(event)">
+    <div class="modal-content card form-modal-content desktop-form-modal-content" onclick="event.stopPropagation()">
+      <button class="close-modal-btn" onclick="closeNoticeFormModal(null)">&times;</button>
+      
+      <h2 id="notice-form-title">Create Announcement</h2>
+      
+      <form id="notice-upload-form" onsubmit="handleNoticeFormSubmit(event)">
+        <input type="hidden" id="form-notice-id" value="">
+        
+        <div class="form-group">
+          <label for="form-title">Opportunity Title *</label>
+          <input type="text" id="form-title" placeholder="e.g. Google STEP Internship 2026" required>
+        </div>
+
+        <div class="form-group">
+          <label for="form-desc">Description & Requirements *</label>
+          <textarea id="form-desc" rows="5" placeholder="Describe the details, criteria, guidelines, etc..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="form-category">Category *</label>
+            <select id="form-category" required>
+              <option value="">Select Category</option>
+              <option value="Internships">Internships</option>
+              <option value="Hackathons">Hackathons</option>
+              <option value="Symposiums">Symposiums</option>
+              <option value="Workshops">Workshops</option>
+              <option value="Placement Training">Placement Training</option>
+              <option value="Competitions">Competitions</option>
+              <option value="Conferences">Conferences</option>
+              <option value="Webinars">Webinars</option>
+              <option value="Department Events">Department Events</option>
+            </select>
+          </div>
+          
+          <div class="form-group" style="display:flex; flex-direction:column; justify-content:center; padding-top: 15px;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="form-ai-classify" onchange="toggleAIClassify(this)">
+              <span>⚡ AI Auto-Classify Category</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="form-deadline">Deadline Date *</label>
+            <input type="date" id="form-deadline" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="form-reg-link">Registration URL</label>
+            <input type="url" id="form-reg-link" placeholder="https://college.edu/register-simulated">
+          </div>
+        </div>
+
+        <!-- Attachment Selectors -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="form-poster-select">Simulated Poster Image</label>
+            <select id="form-poster-select">
+              <option value="tech_banner.jpg">Default Tech Banner (Abstract)</option>
+              <option value="intern_banner.jpg">Corporate Internship Design</option>
+              <option value="hackathon_banner.jpg">Neon Coding/Hackathon</option>
+              <option value="workshop_banner.jpg">Interactive Workshop Desk</option>
+              <option value="competition_banner.jpg">Trophy & Competitions</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="form-pdf-select">Simulated PDF Document</label>
+            <select id="form-pdf-select">
+              <option value="brochure.pdf">Official_Brochure.pdf</option>
+              <option value="eligibility.pdf">Eligibility_Criteria_Sheet.pdf</option>
+              <option value="syllabus.pdf">Workshop_Agenda_Syllabus.pdf</option>
+              <option value="none">No PDF attachment</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-checkboxes">
+          <label class="checkbox-label">
+            <input type="checkbox" id="form-pinned">
+            <span>📌 Pin announcement at the top of lists</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="form-scheduled" onchange="toggleScheduleDate(this)">
+            <span>⏰ Schedule publication for a future date</span>
+          </label>
+        </div>
+
+        <div class="form-group hidden" id="schedule-date-group">
+          <label for="form-schedule-time">Publish Date & Time</label>
+          <input type="datetime-local" id="form-schedule-time">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeNoticeFormModal(null)">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-notice">Post Notice</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
