@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -31,7 +32,7 @@
         <div class="login-card-header">
           <div class="logo-icon large">CH</div>
           <h2>Welcome to ConnectionHub</h2>
-          <p class="logo-subtext">“Everything students need. Organized in one place.”</p>
+          <p class="logo-subtext">"Everything students need. Organized in one place."</p>
         </div>
 
         <div class="login-tabs">
@@ -43,51 +44,68 @@
           </button>
         </div>
 
-        <div class="login-profile-section">
-          <p class="login-section-info" id="login-section-title">Select a student account to log in:</p>
-          <div class="profile-grid" id="login-profiles-list">
-            <!-- Dynamic profile chips inserted by JS -->
+        <!-- Login Form -->
+        <form id="login-auth-form" class="login-auth-form" onsubmit="handleEmailPasswordLogin(event)">
+          <p class="login-section-info" id="login-section-title">
+            <i data-lucide="shield-check" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>
+            Sign in with your registered credentials
+          </p>
+
+          <!-- Error Alert -->
+          <div id="login-error-alert" class="login-error-alert hidden">
+            <i data-lucide="alert-circle"></i>
+            <span id="login-error-text">Invalid email or password.</span>
           </div>
-        </div>
 
-        <div class="add-profile-divider">
-          <span>Or configure a custom profile</span>
-        </div>
-
-        <button class="btn btn-outline" style="width: 100%; border-radius: var(--radius-md);" id="btn-toggle-add-profile" onclick="toggleAddProfileForm()">
-          <i data-lucide="user-plus"></i> Add Custom Profile
-        </button>
-
-        <form id="add-profile-form" class="add-profile-form hidden" onsubmit="handleCreateProfile(event)">
           <div class="form-group">
-            <label for="new-profile-name">Full Name *</label>
-            <input type="text" id="new-profile-name" placeholder="e.g. Dr. Arthur Pendelton" required>
+            <label for="login-email">
+              <i data-lucide="mail" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+              Email Address
+            </label>
+            <input type="email" id="login-email" placeholder="Enter your registered email" required autocomplete="email">
           </div>
+
           <div class="form-group">
-            <label for="new-profile-email">Official Email *</label>
-            <input type="email" id="new-profile-email" placeholder="e.g. arthur@college.edu" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="new-profile-dept">Department *</label>
-              <select id="new-profile-dept" required>
-                <option value="Computer Science">Computer Science</option>
-                <option value="Electronics & Communication">ECE</option>
-                <option value="Information Technology">Information Tech</option>
-                <option value="Mechanical Engineering">Mechanical</option>
-                <option value="Biotechnology">Biotechnology</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="new-profile-title">Role Title / Year *</label>
-              <input type="text" id="new-profile-title" placeholder="e.g. HOD or Student (3rd Year)" required>
+            <label for="login-password">
+              <i data-lucide="lock" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+              Password
+            </label>
+            <div class="password-input-wrapper">
+              <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility()" title="Toggle password visibility">
+                <i data-lucide="eye" id="password-eye-icon"></i>
+              </button>
             </div>
           </div>
-          <div class="form-actions" style="margin-top: 10px; padding-top: 10px; border:none;">
-            <button type="button" class="btn btn-secondary" style="padding: 8px 14px;" onclick="toggleAddProfileForm()">Cancel</button>
-            <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">Create Profile</button>
-          </div>
+
+          <button type="submit" class="btn btn-primary login-submit-btn" id="login-submit-btn">
+            <span class="login-btn-text">Sign In</span>
+            <span class="login-btn-loading hidden">
+              <svg class="spinner-icon" viewBox="0 0 24 24" width="18" height="18">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round">
+                  <animateTransform attributeName="transform" type="rotate" dur="0.8s" from="0 12 12" to="360 12 12" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+              Authenticating...
+            </span>
+          </button>
         </form>
+
+        <!-- Registered Users Quick-Select Section -->
+        <div class="add-profile-divider">
+          <span>Or select a registered account</span>
+        </div>
+
+        <div class="login-profile-section">
+          <div class="profile-grid" id="login-profiles-list">
+            <!-- Dynamic profile chips populated from Excel data by JS -->
+          </div>
+        </div>
+
+        <div class="login-footer-info">
+          <i data-lucide="database" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;opacity:0.6"></i>
+          <span>Credentials managed via Excel database • Contact admin to create account</span>
+        </div>
       </div>
     </div>
 
